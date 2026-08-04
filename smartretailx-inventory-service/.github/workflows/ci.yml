@@ -1,0 +1,29 @@
+name: CI Pipeline - Inventory Service
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -e ./smartretailx-common
+          pip install -r ./smartretailx-inventory-service/requirements.txt
+
+      - name: Run Pytest
+        run: |
+          cd smartretailx-inventory-service
+          pytest
