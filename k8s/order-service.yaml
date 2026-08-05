@@ -13,6 +13,10 @@ spec:
     metadata:
       labels:
         app: order-service
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: "8005"
     spec:
       containers:
       - name: order-service
@@ -22,15 +26,15 @@ spec:
         env:
         - name: PORT
           value: "8005"
-        - name: KAFKA_BOOTSTRAP_SERVERS
-          value: "redpanda:29092"
-        - name: PAYMENT_SERVICE_URL
-          value: "http://payment-service:8004"
         - name: DATABASE_URL
           valueFrom:
             secretKeyRef:
               name: db-secrets
               key: ORDER_DB_URL
+        - name: KAFKA_BOOTSTRAP_SERVERS
+          value: "redpanda:29092"
+        - name: PAYMENT_SERVICE_URL
+          value: "http://payment-service:8004"
         resources:
           requests:
             memory: "128Mi"

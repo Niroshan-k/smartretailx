@@ -1,0 +1,19 @@
+# Local terraform state
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+crash.log
+crash.*.log
+
+# Default local provider directory
+.terraform/
+
+# CLI configuration files
+.terraformrc
+terraform.rc
+
+# Sensitive tfvars files
+*.tfvars
+!terraform.tfvars.example
+secrets.json
+*.pem
