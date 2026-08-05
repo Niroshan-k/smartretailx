@@ -1,0 +1,60 @@
+name: SmartRetailX AWS CI/CD Deployment Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+env:
+  AWS_REGION: us-east-1
+  EKS_CLUSTER_NAME: smartretailx-cluster
+
+jobs:
+  build-and-deploy:
+    name: Build, Push ECR Images & Deploy to AWS EKS
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Log in to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build and Push Microservice Container Images
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          SERVICES=("auth-service" "user-service" "catalog-service" "inventory-service" "payment-service" "order-service")
+          for SERVICE in "${SERVICES[@]}"; do
+            echo "Building $SERVICE..."
+            docker build -t $ECR_REGISTRY/smartretailx/$SERVICE:latest -f smartretailx-$SERVICE/Dockerfile .
+            docker push $ECR_REGISTRY/smartretailx/$SERVICE:latest
+          done
+
+          echo "Building API Gateway..."
+          docker build -t $ECR_REGISTRY/smartretailx/gateway:latest -f smartretailx-gateway/Dockerfile smartretailx-gateway/
+          docker push $ECR_REGISTRY/smartretailx/gateway:latest
+
+      - name: Update Kubernetes Kubeconfig for EKS
+        run: |
+          aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
+
+      - name: Deploy Kubernetes Manifests to EKS
+        run: |
+          kubectl apply -f k8s/
+          kubectl rollout status deployment/auth-service
+          kubectl rollout status deployment/user-service
+          kubectl rollout status deployment/catalog-service
+          kubectl rollout status deployment/inventory-service
+          kubectl rollout status deployment/payment-service
+          kubectl rollout status deployment/order-service

@@ -22,3 +22,19 @@ cd terraform
 terraform init
 terraform plan
 ```
+
+terraform/
+├── .gitignore                     # Prevents committing .tfstate, secrets, or .pem files
+├── README.md
+├── main.tf                        # Root module calling nested modules & Helm provider
+├── variables.tf                   # Root input variables
+├── outputs.tf                     # Root output variables (Grafana URL, EKS Cluster, etc.)
+├── terraform.tfvars.example       # Example variables template WITHOUT sensitive secrets
+└── modules/
+    ├── vpc/                       # AWS VPC & Multi-AZ Public Subnet module
+    ├── ecr/                       # Amazon ECR Container Repositories module (scan_on_push: true)
+    ├── rds/                       # 6 Amazon RDS PostgreSQL databases + AWS Secrets Manager
+    ├── eks/                       # AWS EKS Kubernetes Cluster, Node Groups & IAM Roles module
+    ├── monitoring_ec2/            # Dedicated EC2 Instance for Grafana UI & Prometheus Server
+    └── helm_prometheus/           # Helm provider module deploying kube-prometheus-stack into EKS
+

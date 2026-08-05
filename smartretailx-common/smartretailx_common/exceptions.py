@@ -1,4 +1,4 @@
-# custome HTTP exceptions
+# custom HTTP exceptions
 
 class SmartRetailXException(Exception):
     def __init__(self, message: str, status_code: int = 500, error_code: str = "INTERNAL_SERVER_ERROR"):
@@ -22,3 +22,7 @@ class ForbiddenException(SmartRetailXException):
 class BadRequestException(SmartRetailXException):
     def __init__(self, message: str = "Invalid input data"):
         super().__init__(message, status_code=400, error_code="BAD_REQUEST")
+
+class ConflictException(SmartRetailXException):
+    def __init__(self, message: str = "Resource already exists"):
+        super().__init__(message, status_code=409, error_code="CONFLICT")
