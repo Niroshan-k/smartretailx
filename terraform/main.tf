@@ -62,6 +62,19 @@ module "monitoring_ec2" {
   environment   = var.environment
 }
 
+# 6. Amazon SNS & SQS Notification Messaging Module
+module "sns_sqs" {
+  source      = "./modules/sns_sqs"
+  environment = var.environment
+}
+
+# 7. Amazon CloudWatch Centralized Logging & Alarms Module
+module "cloudwatch" {
+  source        = "./modules/cloudwatch"
+  environment   = var.environment
+  sns_topic_arn = module.sns_sqs.sns_topic_arn
+}
+
 # Kubernetes Provider Configuration for Helm Provider
 provider "kubernetes" {
   host                   = module.eks.cluster_endpoint
@@ -88,7 +101,7 @@ provider "helm" {
   }
 }
 
-# 6. Helm Prometheus Operator Stack Module
+# 8. Helm Prometheus Operator Stack Module
 module "helm_prometheus" {
   source       = "./modules/helm_prometheus"
   cluster_name = module.eks.cluster_name

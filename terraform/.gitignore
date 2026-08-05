@@ -12,6 +12,8 @@ crash.*.log
 .terraformrc
 terraform.rc
 
+.terraform.lock.hcl
+
 # Sensitive tfvars files
 *.tfvars
 !terraform.tfvars.example
