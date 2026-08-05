@@ -28,13 +28,14 @@ resource "aws_security_group" "rds_sg" {
   }
 }
 
-# 1. User DB
+# 1. User DB (Encrypted at Rest)
 resource "aws_db_instance" "user_db" {
   identifier             = "smartretailx-user-db"
   engine                 = "postgres"
   engine_version         = "15.4"
   instance_class         = var.db_instance_class
   allocated_storage      = 20
+  storage_encrypted      = true
   db_name                = "user_db"
   username               = "user_admin"
   password               = random_password.db_password.result
@@ -43,13 +44,14 @@ resource "aws_db_instance" "user_db" {
   skip_final_snapshot    = true
 }
 
-# 2. Catalog DB
+# 2. Catalog DB (Encrypted at Rest)
 resource "aws_db_instance" "catalog_db" {
   identifier             = "smartretailx-catalog-db"
   engine                 = "postgres"
   engine_version         = "15.4"
   instance_class         = var.db_instance_class
   allocated_storage      = 20
+  storage_encrypted      = true
   db_name                = "catalog_db"
   username               = "catalog_admin"
   password               = random_password.db_password.result
@@ -58,13 +60,14 @@ resource "aws_db_instance" "catalog_db" {
   skip_final_snapshot    = true
 }
 
-# 3. Inventory DB
+# 3. Inventory DB (Encrypted at Rest)
 resource "aws_db_instance" "inventory_db" {
   identifier             = "smartretailx-inventory-db"
   engine                 = "postgres"
   engine_version         = "15.4"
   instance_class         = var.db_instance_class
   allocated_storage      = 20
+  storage_encrypted      = true
   db_name                = "inventory_db"
   username               = "inventory_admin"
   password               = random_password.db_password.result
@@ -73,13 +76,14 @@ resource "aws_db_instance" "inventory_db" {
   skip_final_snapshot    = true
 }
 
-# 4. Payment DB
+# 4. Payment DB (Encrypted at Rest - PCI-DSS Compliance)
 resource "aws_db_instance" "payment_db" {
   identifier             = "smartretailx-payment-db"
   engine                 = "postgres"
   engine_version         = "15.4"
   instance_class         = var.db_instance_class
   allocated_storage      = 20
+  storage_encrypted      = true
   db_name                = "payment_db"
   username               = "payment_admin"
   password               = random_password.db_password.result
@@ -88,13 +92,14 @@ resource "aws_db_instance" "payment_db" {
   skip_final_snapshot    = true
 }
 
-# 5. Order DB
+# 5. Order DB (Encrypted at Rest)
 resource "aws_db_instance" "order_db" {
   identifier             = "smartretailx-order-db"
   engine                 = "postgres"
   engine_version         = "15.4"
   instance_class         = var.db_instance_class
   allocated_storage      = 20
+  storage_encrypted      = true
   db_name                = "order_db"
   username               = "order_admin"
   password               = random_password.db_password.result
@@ -103,13 +108,14 @@ resource "aws_db_instance" "order_db" {
   skip_final_snapshot    = true
 }
 
-# 6. Auth DB
+# 6. Auth DB (Encrypted at Rest)
 resource "aws_db_instance" "auth_db" {
   identifier             = "smartretailx-auth-db"
   engine                 = "postgres"
   engine_version         = "15.4"
   instance_class         = var.db_instance_class
   allocated_storage      = 20
+  storage_encrypted      = true
   db_name                = "auth_db"
   username               = "auth_admin"
   password               = random_password.db_password.result
@@ -118,7 +124,7 @@ resource "aws_db_instance" "auth_db" {
   skip_final_snapshot    = true
 }
 
-# AWS Secrets Manager
+# AWS Secrets Manager for Centralized Database Credentials
 resource "aws_secretsmanager_secret" "db_secrets" {
   name = "smartretailx/production/db-secrets"
 }
