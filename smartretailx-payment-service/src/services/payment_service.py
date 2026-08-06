@@ -19,7 +19,7 @@ class PaymentService:
             if not re.match(r"^\d{13,19}$", clean_card):
                 raise BadRequestException("Invalid credit card format. Must be 13 to 19 digits.")
 
-        # Validate Expiry format if provided
+        # Validate CVV format if provided
         if req.cvv and not re.match(r"^\d{3,4}$", req.cvv):
             raise BadRequestException("Invalid CVV format. Must be 3 or 4 digits.")
 

@@ -45,7 +45,7 @@ def seed_admin_user():
             )
             db.add(admin)
             db.commit()
-            print("Seeded default admin user in auth_db: admin@smartretailx.com / admin123")
+            print("Seeded default admin user in auth_db: admin@smartretailx.com")
     except Exception as e:
         print(f"Error seeding admin user in auth_db: {e}")
         db.rollback()

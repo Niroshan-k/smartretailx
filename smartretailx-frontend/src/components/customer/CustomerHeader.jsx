@@ -15,7 +15,7 @@ export default function CustomerHeader({
   return (
     <header className="daraz-header">
       <div className="daraz-header-container">
-        <a href="#" className="daraz-logo" onClick={() => setActiveTab('catalog')}>
+        <a href="#" className="daraz-logo" onClick={(e) => { e.preventDefault(); setActiveTab('catalog'); }}>
           <ShoppingBag size={28} color="#ffffff" />
           Smart<span style={{ color: '#212121' }}>RetailX</span>
         </a>
