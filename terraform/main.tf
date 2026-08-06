@@ -75,6 +75,12 @@ module "cloudwatch" {
   sns_topic_arn = module.sns_sqs.sns_topic_arn
 }
 
+# 8. Amazon S3 & CloudFront CDN Module for React Frontend (Free Tier)
+module "frontend_s3_cloudfront" {
+  source      = "./modules/frontend_s3_cloudfront"
+  environment = var.environment
+}
+
 # Kubernetes Provider Configuration for Helm Provider
 provider "kubernetes" {
   host                   = module.eks.cluster_endpoint
@@ -101,7 +107,7 @@ provider "helm" {
   }
 }
 
-# 8. Helm Prometheus Operator Stack Module
+# 9. Helm Prometheus Operator Stack Module
 module "helm_prometheus" {
   source       = "./modules/helm_prometheus"
   cluster_name = module.eks.cluster_name

@@ -1,15 +1,17 @@
+const API_BASE = import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080/api/v1';
+
 const directPorts = {
-  '/catalog': 'http://localhost:8002/api/v1/catalog',
-  '/inventory': 'http://localhost:8003/api/v1/inventory',
-  '/orders/all': 'http://localhost:8005/api/v1/orders/all',
-  '/orders': 'http://localhost:8005/api/v1/orders',
-  '/payments/process': 'http://localhost:8004/api/v1/payments/process',
-  '/auth/login': 'http://localhost:8006/api/v1/auth/login',
-  '/auth/register': 'http://localhost:8006/api/v1/auth/register',
+  '/catalog': `${API_BASE}/catalog`,
+  '/inventory': `${API_BASE}/inventory`,
+  '/orders/all': `${API_BASE}/orders/all`,
+  '/orders': `${API_BASE}/orders`,
+  '/payments/process': `${API_BASE}/payments/process`,
+  '/auth/login': `${API_BASE}/auth/login`,
+  '/auth/register': `${API_BASE}/auth/register`,
 };
 
 export const apiFetch = async (path, options = {}) => {
-  const gatewayUrl = `http://localhost:8080/api/v1${path}`;
+  const gatewayUrl = `${API_BASE}${path}`;
   const directUrl = directPorts[path] || gatewayUrl;
   try {
     const res = await fetch(gatewayUrl, options);
@@ -19,12 +21,12 @@ export const apiFetch = async (path, options = {}) => {
 };
 
 export const serviceHealthEndpoints = [
-  { id: 'auth', name: 'Authentication & Token Service', port: '8006', db: 'auth_db', url: 'http://localhost:8006/health' },
-  { id: 'user', name: 'User Management Service', port: '8001', db: 'user_db', url: 'http://localhost:8001/health' },
-  { id: 'catalog', name: 'Product Catalogue Service', port: '8002', db: 'catalog_db', url: 'http://localhost:8002/api/v1/catalog' },
-  { id: 'inventory', name: 'Inventory Management Service', port: '8003', db: 'inventory_db', url: 'http://localhost:8003/api/v1/inventory' },
-  { id: 'payment', name: 'Payment Processing Service', port: '8004', db: 'payment_db', url: 'http://localhost:8004/health' },
-  { id: 'order', name: 'Order Processing Service', port: '8005', db: 'order_db', url: 'http://localhost:8005/health' },
-  { id: 'gateway', name: 'Nginx API Gateway', port: '8080', db: 'gateway', url: 'http://localhost:8080/health' },
-  { id: 'kafka', name: 'Redpanda Kafka Event Broker', port: '9092', db: 'kafka', url: 'http://localhost:19644/v1/status/ready' }
+  { id: 'auth', name: 'Authentication & Token Service', port: '8006', db: 'auth_db', url: `${API_BASE}/auth/login` },
+  { id: 'user', name: 'User Management Service', port: '8001', db: 'user_db', url: `${API_BASE}/users` },
+  { id: 'catalog', name: 'Product Catalogue Service', port: '8002', db: 'catalog_db', url: `${API_BASE}/catalog` },
+  { id: 'inventory', name: 'Inventory Management Service', port: '8003', db: 'inventory_db', url: `${API_BASE}/inventory` },
+  { id: 'payment', name: 'Payment Processing Service', port: '8004', db: 'payment_db', url: `${API_BASE}/payments/process` },
+  { id: 'order', name: 'Order Processing Service', port: '8005', db: 'order_db', url: `${API_BASE}/orders` },
+  { id: 'gateway', name: 'API Gateway Router', port: '8080', db: 'gateway', url: `${API_BASE}/catalog` },
+  { id: 'kafka', name: 'Redpanda Event Broker', port: '9092', db: 'kafka', url: `${API_BASE}/orders` }
 ];
