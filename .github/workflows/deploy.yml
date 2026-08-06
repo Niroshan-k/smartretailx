@@ -35,18 +35,17 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          SERVICES=("auth-service" "user-service" "catalog-service" "inventory-service" "payment-service" "order-service")
+          SERVICES=("auth-service" "user-service" "catalog-service" "inventory-service" "payment-service" "order-service" "gateway")
           for SERVICE in "${SERVICES[@]}"; do
             echo "Building $SERVICE with tags: $IMAGE_TAG and latest..."
-            docker build -t $ECR_REGISTRY/smartretailx/$SERVICE:$IMAGE_TAG -t $ECR_REGISTRY/smartretailx/$SERVICE:latest -f smartretailx-$SERVICE/Dockerfile .
+            if [ "$SERVICE" = "gateway" ]; then
+              docker build -t $ECR_REGISTRY/smartretailx/$SERVICE:$IMAGE_TAG -t $ECR_REGISTRY/smartretailx/$SERVICE:latest -f smartretailx-gateway/Dockerfile smartretailx-gateway/
+            else
+              docker build -t $ECR_REGISTRY/smartretailx/$SERVICE:$IMAGE_TAG -t $ECR_REGISTRY/smartretailx/$SERVICE:latest -f smartretailx-$SERVICE/Dockerfile .
+            fi
             docker push $ECR_REGISTRY/smartretailx/$SERVICE:$IMAGE_TAG
             docker push $ECR_REGISTRY/smartretailx/$SERVICE:latest
           done
-
-          echo "Building API Gateway..."
-          docker build -t $ECR_REGISTRY/smartretailx/gateway:$IMAGE_TAG -t $ECR_REGISTRY/smartretailx/gateway:latest -f smartretailx-gateway/Dockerfile smartretailx-gateway/
-          docker push $ECR_REGISTRY/smartretailx/gateway:$IMAGE_TAG
-          docker push $ECR_REGISTRY/smartretailx/gateway:latest
 
       - name: Update Kubeconfig & Synchronize AWS Secrets Manager into EKS
         env:
@@ -54,7 +53,6 @@ jobs:
         run: |
           aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
 
-          # Synchronize AWS Secrets Manager database credentials into Kubernetes secret 'db-secrets'
           SECRET_ARN=$(aws secretsmanager list-secrets --query "SecretList[?starts_with(Name, 'smartretailx/')].Name" --output text | head -n 1)
           if [ -n "$SECRET_ARN" ]; then
             echo "Fetching database credentials from AWS Secrets Manager ($SECRET_ARN)..."
@@ -66,7 +64,6 @@ jobs:
             ORDER_DB_URL=$(echo $SECRET_JSON | jq -r '.ORDER_DB_URL // "postgresql://order_admin:order_pass@localhost:5432/order_db"')
             AUTH_DB_URL=$(echo $SECRET_JSON | jq -r '.AUTH_DB_URL // "postgresql://auth_admin:auth_pass@localhost:5432/auth_db"')
           else
-            echo "Secrets Manager secret not found, fallback to default connection strings..."
             USER_DB_URL="postgresql://user_admin:user_pass@localhost:5432/user_db"
             CATALOG_DB_URL="postgresql://catalog_admin:catalog_pass@localhost:5432/catalog_db"
             INVENTORY_DB_URL="postgresql://inventory_admin:inventory_pass@localhost:5432/inventory_db"
@@ -93,6 +90,7 @@ jobs:
           for SERVICE in "${SERVICES[@]}"; do
             sed -i "s|image: smartretailx/$SERVICE:latest|image: $ECR_REGISTRY/smartretailx/$SERVICE:$IMAGE_TAG|g" k8s/$SERVICE.yaml
           done
+          sed -i "s|image: smartretailx/gateway:latest|image: $ECR_REGISTRY/smartretailx/gateway:$IMAGE_TAG|g" k8s/gateway-service.yaml
 
           kubectl apply -f k8s/
           kubectl rollout status deployment/auth-service --timeout=300s
@@ -101,3 +99,4 @@ jobs:
           kubectl rollout status deployment/inventory-service --timeout=300s
           kubectl rollout status deployment/payment-service --timeout=300s
           kubectl rollout status deployment/order-service --timeout=300s
+          kubectl rollout status deployment/gateway-service --timeout=300s
