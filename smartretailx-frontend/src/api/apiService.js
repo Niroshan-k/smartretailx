@@ -1,23 +1,8 @@
 const API_BASE = import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080/api/v1';
 
-const directPorts = {
-  '/catalog': `${API_BASE}/catalog`,
-  '/inventory': `${API_BASE}/inventory`,
-  '/orders/all': `${API_BASE}/orders/all`,
-  '/orders': `${API_BASE}/orders`,
-  '/payments/process': `${API_BASE}/payments/process`,
-  '/auth/login': `${API_BASE}/auth/login`,
-  '/auth/register': `${API_BASE}/auth/register`,
-};
-
 export const apiFetch = async (path, options = {}) => {
   const gatewayUrl = `${API_BASE}${path}`;
-  const directUrl = directPorts[path] || gatewayUrl;
-  try {
-    const res = await fetch(gatewayUrl, options);
-    if (res && res.status !== 502 && res.status !== 503) return res;
-  } catch (e) {}
-  return await fetch(directUrl, options);
+  return await fetch(gatewayUrl, options);
 };
 
 export const serviceHealthEndpoints = [
