@@ -126,7 +126,7 @@ resource "aws_db_instance" "auth_db" {
 
 # AWS Secrets Manager for Centralized Database Credentials
 resource "aws_secretsmanager_secret" "db_secrets" {
-  name = "smartretailx/production/db-secrets"
+  name_prefix = "smartretailx/${var.environment}/db-secrets-"
 }
 
 resource "aws_secretsmanager_secret_version" "db_secrets_val" {

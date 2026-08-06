@@ -44,6 +44,7 @@ module "rds" {
   vpc_id            = module.vpc.vpc_id
   subnet_ids        = module.vpc.public_subnet_ids
   db_instance_class = var.db_instance_class
+  environment       = var.environment
 }
 
 # 4. EKS Kubernetes Cluster Module

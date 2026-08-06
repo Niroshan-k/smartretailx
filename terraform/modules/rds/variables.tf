@@ -13,3 +13,9 @@ variable "db_instance_class" {
   type        = string
   default     = "db.t3.micro"
 }
+
+variable "environment" {
+  description = "Environment name"
+  type        = string
+  default     = "production"
+}
