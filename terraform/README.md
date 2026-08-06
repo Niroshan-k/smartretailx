@@ -12,7 +12,7 @@ terraform/
 ├── README.md
 ├── main.tf                        # Root module calling nested modules & Helm provider
 ├── variables.tf                   # Root input variables
-├── outputs.tf                     # Root output variables (Grafana URL, EKS Cluster, etc.)
+├── outputs.tf                     # Root output variables (Grafana URL, EKS Cluster, CloudFront URL)
 ├── terraform.tfvars.example       # Example variables template WITHOUT sensitive secrets
 └── modules/
     ├── vpc/                       # AWS VPC & Multi-AZ Public Subnet module
@@ -22,6 +22,7 @@ terraform/
     ├── monitoring_ec2/            # Dedicated EC2 Instance for Grafana UI & Prometheus Server
     ├── sns_sqs/                   # Amazon SNS Notifications Topic & SQS Orders Queue (with DLQ)
     ├── cloudwatch/                # CloudWatch Log Groups & Automated Metric Alarms (CPU, 5xx, Storage)
+    ├── frontend_s3_cloudfront/    # Amazon S3 Bucket & CloudFront CDN Distribution (HTTPS)
     └── helm_prometheus/           # Helm provider module deploying kube-prometheus-stack into EKS
 ```
 
@@ -53,7 +54,11 @@ terraform/
    - Centralized CloudWatch Log Groups (`/aws/eks/smartretailx-cluster/logs`, `/aws/smartretailx/microservices`).
    - Automated Alarms for High CPU (>85%), API 5xx Errors (>5), and Low RDS Storage (<2GB).
 
-8. **Helm Prometheus Operator (`modules/helm_prometheus`)**:
+8. **Frontend S3 & CloudFront CDN (`modules/frontend_s3_cloudfront`)**:
+   - **Amazon S3**: Static web hosting bucket for React frontend application (`index.html`).
+   - **Amazon CloudFront**: Global CDN distribution providing free HTTPS encryption out-of-the-box (`https://<distribution-id>.cloudfront.net`).
+
+9. **Helm Prometheus Operator (`modules/helm_prometheus`)**:
    - Deploys `kube-prometheus-stack` into EKS namespace `monitoring`.
 
 ---
@@ -68,4 +73,7 @@ terraform plan
 
 # Apply Infrastructure to AWS
 terraform apply
+
+# Teardown Infrastructure (Zero Cost!)
+terraform destroy
 ```

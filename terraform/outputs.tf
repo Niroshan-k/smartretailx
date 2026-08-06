@@ -58,6 +58,16 @@ output "cloudwatch_high_cpu_alarm_arn" {
   description = "CloudWatch High CPU Alarm ARN"
 }
 
+output "frontend_s3_bucket" {
+  value       = module.frontend_s3_cloudfront.s3_bucket_name
+  description = "Amazon S3 Bucket Name hosting React Frontend"
+}
+
+output "frontend_cloudfront_url" {
+  value       = module.frontend_s3_cloudfront.cloudfront_domain_name
+  description = "Global CloudFront CDN Domain Name for Frontend (HTTPS)"
+}
+
 output "prometheus_helm_namespace" {
   value       = module.helm_prometheus.namespace
   description = "Kubernetes namespace for Prometheus Helm release"

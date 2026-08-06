@@ -32,7 +32,7 @@ resource "aws_security_group" "rds_sg" {
 resource "aws_db_instance" "user_db" {
   identifier             = "smartretailx-user-db"
   engine                 = "postgres"
-  engine_version         = "15.4"
+  engine_version         = "15"
   instance_class         = var.db_instance_class
   allocated_storage      = 20
   storage_encrypted      = true
@@ -48,7 +48,7 @@ resource "aws_db_instance" "user_db" {
 resource "aws_db_instance" "catalog_db" {
   identifier             = "smartretailx-catalog-db"
   engine                 = "postgres"
-  engine_version         = "15.4"
+  engine_version         = "15"
   instance_class         = var.db_instance_class
   allocated_storage      = 20
   storage_encrypted      = true
@@ -64,7 +64,7 @@ resource "aws_db_instance" "catalog_db" {
 resource "aws_db_instance" "inventory_db" {
   identifier             = "smartretailx-inventory-db"
   engine                 = "postgres"
-  engine_version         = "15.4"
+  engine_version         = "15"
   instance_class         = var.db_instance_class
   allocated_storage      = 20
   storage_encrypted      = true
@@ -80,7 +80,7 @@ resource "aws_db_instance" "inventory_db" {
 resource "aws_db_instance" "payment_db" {
   identifier             = "smartretailx-payment-db"
   engine                 = "postgres"
-  engine_version         = "15.4"
+  engine_version         = "15"
   instance_class         = var.db_instance_class
   allocated_storage      = 20
   storage_encrypted      = true
@@ -96,7 +96,7 @@ resource "aws_db_instance" "payment_db" {
 resource "aws_db_instance" "order_db" {
   identifier             = "smartretailx-order-db"
   engine                 = "postgres"
-  engine_version         = "15.4"
+  engine_version         = "15"
   instance_class         = var.db_instance_class
   allocated_storage      = 20
   storage_encrypted      = true
@@ -112,7 +112,7 @@ resource "aws_db_instance" "order_db" {
 resource "aws_db_instance" "auth_db" {
   identifier             = "smartretailx-auth-db"
   engine                 = "postgres"
-  engine_version         = "15.4"
+  engine_version         = "15"
   instance_class         = var.db_instance_class
   allocated_storage      = 20
   storage_encrypted      = true
