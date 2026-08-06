@@ -55,7 +55,7 @@ jobs:
       - name: Deploy Kubernetes Manifests & Restart Deployments in EKS
         run: |
           kubectl apply -f k8s/
-          kubectl rollout restart deployment auth-service user-service catalog-service inventory-service payment-service order-service gateway
+          kubectl rollout restart deployment auth-service user-service catalog-service inventory-service payment-service order-service
           kubectl rollout status deployment/auth-service --timeout=120s
           kubectl rollout status deployment/user-service --timeout=120s
           kubectl rollout status deployment/catalog-service --timeout=120s
