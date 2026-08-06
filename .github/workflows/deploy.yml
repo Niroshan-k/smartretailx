@@ -100,3 +100,4 @@ jobs:
           kubectl rollout status deployment/payment-service --timeout=300s
           kubectl rollout status deployment/order-service --timeout=300s
           kubectl rollout status deployment/gateway-service --timeout=300s
+          kubectl rollout status deployment/kafka-service --timeout=300s

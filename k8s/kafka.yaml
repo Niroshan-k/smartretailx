@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-service
+  labels:
+    app: kafka-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka-service
+  template:
+    metadata:
+      labels:
+        app: kafka-service
+    spec:
+      containers:
+      - name: redpanda
+        image: docker.redpanda.com/redpandadata/redpanda:v23.2.14
+        args:
+        - redpanda
+        - start
+        - --smp=1
+        - --memory=256M
+        - --reserve-memory=0M
+        - --overprovisioned
+        - --node-id=0
+        - --check=false
+        - --kafka-addr=PLAINTEXT://0.0.0.0:9092
+        - --advertise-kafka-addr=PLAINTEXT://kafka-service:9092
+        ports:
+        - containerPort: 9092
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "384Mi"
+            cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-service
+spec:
+  type: ClusterIP
+  ports:
+  - port: 9092
+    targetPort: 9092
+  selector:
+    app: kafka-service
