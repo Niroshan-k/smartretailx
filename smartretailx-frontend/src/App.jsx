@@ -131,11 +131,7 @@ export default function App() {
     fetchOrders();
   }, [currentUser]);
 
-  useEffect(() => {
-    pingMicroservices();
-    const interval = setInterval(pingMicroservices, 5000);
-    return () => clearInterval(interval);
-  }, []);
+
 
   // Auth Handlers
   const handleCustomerLogin = async ({ email, password }) => {

@@ -40,3 +40,10 @@ logs/
 Thumbs.db
 
 security/
+*.jtl
+*jmx
+locustfile.py
+run_performance_test.py
+jmeter_html_report/
+ssm_cli.json
+ssm_params.json

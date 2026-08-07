@@ -66,11 +66,43 @@ resource "aws_instance" "monitoring_server" {
               systemctl enable docker
 
               mkdir -p /opt/monitoring
+              cat << 'PROMETHEUSCONF' > /opt/monitoring/prometheus.yml
+              global:
+                scrape_interval: 5s
+
+              scrape_configs:
+                - job_name: 'prometheus'
+                  static_configs:
+                    - targets: ['localhost:9090']
+
+                - job_name: 'gateway-service'
+                  metrics_path: '/health'
+                  static_configs:
+                    - targets: ['a8dfd9d744320422798209ff55d1bf51-660498316.us-east-1.elb.amazonaws.com']
+
+                - job_name: 'catalog-service'
+                  metrics_path: '/api/v1/catalog'
+                  static_configs:
+                    - targets: ['a8dfd9d744320422798209ff55d1bf51-660498316.us-east-1.elb.amazonaws.com']
+
+                - job_name: 'inventory-service'
+                  metrics_path: '/api/v1/inventory'
+                  static_configs:
+                    - targets: ['a8dfd9d744320422798209ff55d1bf51-660498316.us-east-1.elb.amazonaws.com']
+
+                - job_name: 'order-service'
+                  metrics_path: '/api/v1/orders'
+                  static_configs:
+                    - targets: ['a8dfd9d744320422798209ff55d1bf51-660498316.us-east-1.elb.amazonaws.com']
+              PROMETHEUSCONF
+
               cat << 'DOCKERCOMPOSE' > /opt/monitoring/docker-compose.yml
               version: '3.8'
               services:
                 prometheus:
                   image: prom/prometheus:latest
+                  volumes:
+                    - ./prometheus.yml:/etc/prometheus/prometheus.yml
                   ports:
                     - "9090:9090"
                   restart: always
