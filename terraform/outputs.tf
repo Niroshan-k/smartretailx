@@ -72,3 +72,35 @@ output "prometheus_helm_namespace" {
   value       = module.helm_prometheus.namespace
   description = "Kubernetes namespace for Prometheus Helm release"
 }
+
+output "nat_gateway_ip" {
+  value       = module.vpc.nat_gateway_ip
+  description = "Elastic Public IP of AWS NAT Gateway"
+}
+
+output "redis_endpoint" {
+  value       = module.redis.redis_endpoint
+  description = "Amazon ElastiCache Redis Cluster Endpoint URL"
+}
+
+output "ses_email" {
+  value       = module.ses.ses_email
+  description = "Amazon SES Verified Email Identity"
+}
+
+output "analytics_s3_bucket" {
+  value       = module.analytics.analytics_s3_bucket
+  description = "Amazon S3 Data Lake Analytics Bucket Name"
+}
+
+output "glue_database_name" {
+  value       = module.analytics.glue_database_name
+  description = "AWS Glue Data Catalog Database Name"
+}
+
+output "athena_workgroup_name" {
+  value       = module.analytics.athena_workgroup_name
+  description = "Amazon Athena Workgroup Name"
+}
+
+

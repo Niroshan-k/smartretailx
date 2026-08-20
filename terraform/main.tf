@@ -120,3 +120,25 @@ module "waf" {
   source = "./modules/waf"
 }
 
+# 11. Amazon ElastiCache Redis Caching Module
+module "redis" {
+  source      = "./modules/redis"
+  vpc_id      = module.vpc.vpc_id
+  subnet_ids  = module.vpc.private_subnet_ids
+  environment = var.environment
+}
+
+# 12. Amazon Simple Email Service (SES) Identity Module
+module "ses" {
+  source      = "./modules/ses"
+  environment = var.environment
+}
+
+# 13. AWS AI & Data Analytics Stack Module (Athena, Glue DB, S3 Data Lake & JSON Seed Data)
+module "analytics" {
+  source      = "./modules/analytics"
+  environment = var.environment
+}
+
+
+
