@@ -11,7 +11,7 @@ def get_current_user_profile(
     current_user: TokenPayload = Depends(get_current_user),
     service: UserService = Depends(get_user_service)
 ):
-    user = service.get_user_by_id(current_user.user_id)
+    user = service.get_user_by_id(current_user.user_id, email=current_user.email)
     return StandardResponse(success=True, message="Profile retrieved", data=user)
 
 @router.get("/{user_id}", response_model=StandardResponse[UserResponse])

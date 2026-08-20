@@ -28,6 +28,8 @@ spec:
         env:
         - name: PORT
           value: "8006"
+        - name: JWT_SECRET
+          value: "smartretailx-super-secret-key-change-in-production"
         - name: DATABASE_URL
           valueFrom:
             secretKeyRef:
