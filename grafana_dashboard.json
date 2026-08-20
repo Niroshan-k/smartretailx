@@ -195,195 +195,84 @@
     {
       "collapsed": false,
       "gridPos": {
-        "h": 8,
-        "w": 12,
+        "h": 10,
+        "w": 24,
         "x": 0,
         "y": 6
       },
       "id": 5,
-      "title": "Process CPU Time (Seconds)",
-      "type": "timeseries",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus"
-          },
-          "editorMode": "code",
-          "expr": "process_cpu_seconds_total",
-          "legendFormat": "{{instance}}",
-          "refId": "A"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "fixed",
-            "fixedColor": "#3498DB"
-          },
-          "custom": {
-            "fillOpacity": 15,
-            "lineWidth": 2
-          }
-        }
-      }
-    },
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 6
-      },
-      "id": 6,
-      "title": "Resident Memory (MB)",
-      "type": "timeseries",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus"
-          },
-          "editorMode": "code",
-          "expr": "process_resident_memory_bytes / 1024 / 1024",
-          "legendFormat": "{{instance}}",
-          "refId": "A"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "fixed",
-            "fixedColor": "#2ECC71"
-          },
-          "custom": {
-            "fillOpacity": 15,
-            "lineWidth": 2
-          }
-        }
-      }
-    },
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 14
-      },
-      "id": 7,
-      "title": "Virtual Memory Footprint (MB)",
-      "type": "timeseries",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus"
-          },
-          "editorMode": "code",
-          "expr": "process_virtual_memory_bytes / 1024 / 1024",
-          "legendFormat": "{{instance}}",
-          "refId": "A"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "fixed",
-            "fixedColor": "#9B59B6"
-          },
-          "custom": {
-            "fillOpacity": 10,
-            "lineWidth": 2
-          }
-        }
-      }
-    },
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 14
-      },
-      "id": 8,
-      "title": "Scrape Response Latency (ms)",
-      "type": "timeseries",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus"
-          },
-          "editorMode": "code",
-          "expr": "scrape_duration_seconds * 1000",
-          "legendFormat": "{{instance}}",
-          "refId": "A"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "fixed",
-            "fixedColor": "#F1C40F"
-          },
-          "custom": {
-            "fillOpacity": 15,
-            "lineWidth": 2
-          }
-        }
-      }
-    },
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 8,
-        "w": 24,
-        "x": 0,
-        "y": 22
-      },
-      "id": 9,
-      "title": "Open File Descriptors",
-      "type": "timeseries",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus"
-          },
-          "editorMode": "code",
-          "expr": "process_open_fds",
-          "legendFormat": "{{instance}}",
-          "refId": "A"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "fixed",
-            "fixedColor": "#E67E22"
-          },
-          "custom": {
-            "fillOpacity": 15,
-            "lineWidth": 2
-          }
-        }
-      }
-    },
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 10,
-        "w": 24,
-        "x": 0,
-        "y": 30
-      },
-      "id": 10,
-      "title": "AWS CloudWatch Centralized Microservices Log Stream (/aws/smartretailx/microservices)",
+      "title": "AWS CloudWatch Centralized Live Microservice Log Stream",
       "type": "logs",
       "targets": [
         {
           "datasource": {
             "type": "cloudwatch"
           },
-          "expression": "fields @timestamp, @message, @logStream | sort @timestamp desc | limit 50",
+          "expression": "fields @timestamp, @message, @logStream | sort @timestamp desc | limit 100",
+          "logGroupNames": [
+            "/aws/smartretailx/microservices"
+          ],
+          "queryMode": "Logs",
+          "refId": "A",
+          "region": "us-east-1"
+        }
+      ],
+      "options": {
+        "enableLogDetails": true,
+        "showLabels": true,
+        "sortOrder": "Descending",
+        "wrapLogMessage": true
+      }
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 10,
+        "w": 12,
+        "x": 0,
+        "y": 16
+      },
+      "id": 6,
+      "title": "Catalog & Inventory Microservices Container Logs",
+      "type": "logs",
+      "targets": [
+        {
+          "datasource": {
+            "type": "cloudwatch"
+          },
+          "expression": "fields @timestamp, @message, @logStream | filter @logStream like \"catalog\" or @logStream like \"inventory\" | sort @timestamp desc | limit 50",
+          "logGroupNames": [
+            "/aws/smartretailx/microservices"
+          ],
+          "queryMode": "Logs",
+          "refId": "A",
+          "region": "us-east-1"
+        }
+      ],
+      "options": {
+        "enableLogDetails": true,
+        "showLabels": true,
+        "sortOrder": "Descending",
+        "wrapLogMessage": true
+      }
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 10,
+        "w": 12,
+        "x": 12,
+        "y": 16
+      },
+      "id": 7,
+      "title": "Payment & Order Microservices Event Streaming Logs",
+      "type": "logs",
+      "targets": [
+        {
+          "datasource": {
+            "type": "cloudwatch"
+          },
+          "expression": "fields @timestamp, @message, @logStream | filter @logStream like \"payment\" or @logStream like \"order\" | sort @timestamp desc | limit 50",
           "logGroupNames": [
             "/aws/smartretailx/microservices"
           ],
@@ -405,11 +294,11 @@
   "style": "dark",
   "tags": ["smartretailx", "cloudwatch-logs"],
   "time": {
-    "from": "now-1h",
+    "from": "now-6h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "browser",
-  "title": "SmartRetailX Production Telemetry & Centralized CloudWatch Logs",
-  "uid": "smartretailx-cloudwatch-telemetry"
+  "title": "SmartRetailX Production Telemetry & CloudWatch Log Stream",
+  "uid": "smartretailx-live-cloudwatch-logs"
 }

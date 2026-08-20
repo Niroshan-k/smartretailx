@@ -114,3 +114,9 @@ module "helm_prometheus" {
   cluster_name = module.eks.cluster_name
   depends_on   = [module.eks]
 }
+
+# 10. AWS WAFv2 Web ACL Module
+module "waf" {
+  source = "./modules/waf"
+}
+

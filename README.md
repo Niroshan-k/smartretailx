@@ -2,6 +2,10 @@
 
 Cloud-native distributed microservices commerce platform built for the cloud engineering assignment.
 
+# Architecture Diagram
+![AWS Infrastructure Overview](diagram/diagram.png)
+
+
 ## Architecture
 - **5 Microservices (Python / FastAPI / PostgreSQL)**:
   - `smartretailx-user-service`: User auth & RBAC profile management

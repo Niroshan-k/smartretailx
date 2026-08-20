@@ -18,5 +18,9 @@ plan
 # Sensitive tfvars files
 *.tfvars
 !terraform.tfvars.example
+terraform.tfvars.example
 secrets.json
 *.pem
+
+**/lambda_function.zip
+**/*.zip
