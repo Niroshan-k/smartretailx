@@ -1,4 +1,22 @@
 {
+  "__inputs": [
+    {
+      "name": "DS_PROMETHEUS",
+      "label": "Prometheus",
+      "description": "Select Prometheus Data Source",
+      "type": "datasource",
+      "pluginId": "prometheus",
+      "pluginName": "Prometheus"
+    },
+    {
+      "name": "DS_CLOUDWATCH",
+      "label": "CloudWatch",
+      "description": "Select AWS CloudWatch Data Source",
+      "type": "datasource",
+      "pluginId": "cloudwatch",
+      "pluginName": "CloudWatch"
+    }
+  ],
   "annotations": {
     "list": []
   },
@@ -12,18 +30,19 @@
     {
       "collapsed": false,
       "gridPos": {
-        "h": 6,
+        "h": 5,
         "w": 6,
         "x": 0,
         "y": 0
       },
       "id": 1,
-      "title": "System Health Uptime",
+      "title": "System Health & Uptime",
       "type": "gauge",
       "targets": [
         {
           "datasource": {
-            "type": "prometheus"
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "expr": "avg(up) * 100",
@@ -73,21 +92,63 @@
     {
       "collapsed": false,
       "gridPos": {
-        "h": 6,
+        "h": 5,
         "w": 6,
         "x": 6,
         "y": 0
       },
       "id": 2,
-      "title": "CPU Utilization",
+      "title": "Active Microservice Targets",
+      "type": "stat",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "count(up == 1)",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#2ECC71"
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "auto",
+        "textMode": "auto"
+      }
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 12,
+        "y": 0
+      },
+      "id": 3,
+      "title": "Avg Scrape Latency (ms)",
       "type": "gauge",
       "targets": [
         {
           "datasource": {
-            "type": "prometheus"
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(process_cpu_seconds_total) / 10",
+          "expr": "avg(scrape_duration_seconds * 1000)",
           "instant": true,
           "refId": "A"
         }
@@ -98,8 +159,8 @@
             "mode": "thresholds"
           },
           "min": 0,
-          "max": 100,
-          "unit": "percent",
+          "max": 500,
+          "unit": "ms",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -109,11 +170,11 @@
               },
               {
                 "color": "#FFB703",
-                "value": 60
+                "value": 150
               },
               {
                 "color": "#E63946",
-                "value": 85
+                "value": 300
               }
             ]
           }
@@ -133,49 +194,19 @@
     {
       "collapsed": false,
       "gridPos": {
-        "h": 6,
-        "w": 6,
-        "x": 12,
-        "y": 0
-      },
-      "id": 3,
-      "title": "Active Microservices",
-      "type": "stat",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus"
-          },
-          "editorMode": "code",
-          "expr": "count(up)",
-          "instant": true,
-          "refId": "A"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "fixed",
-            "fixedColor": "#2ECC71"
-          }
-        }
-      }
-    },
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 6,
+        "h": 5,
         "w": 6,
         "x": 18,
         "y": 0
       },
       "id": 4,
-      "title": "Scrape Sample Count",
+      "title": "Total Scraped Samples",
       "type": "stat",
       "targets": [
         {
           "datasource": {
-            "type": "prometheus"
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "expr": "sum(scrape_samples_scraped)",
@@ -190,6 +221,83 @@
             "fixedColor": "#3498DB"
           }
         }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "auto",
+        "textMode": "auto"
+      }
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 5
+      },
+      "id": 5,
+      "title": "Microservice Scrape Sample Rate",
+      "type": "timeseries",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(scrape_samples_scraped[1m])) by (job)",
+          "legendFormat": "{{job}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "fillOpacity": 15
+          },
+          "unit": "short"
+        }
+      }
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 5
+      },
+      "id": 6,
+      "title": "Target Scrape Response Time (ms)",
+      "type": "timeseries",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "scrape_duration_seconds * 1000",
+          "legendFormat": "{{job}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "fillOpacity": 10
+          },
+          "unit": "ms"
+        }
       }
     },
     {
@@ -198,17 +306,18 @@
         "h": 10,
         "w": 24,
         "x": 0,
-        "y": 6
+        "y": 13
       },
-      "id": 5,
+      "id": 7,
       "title": "AWS CloudWatch Centralized Live Microservice Log Stream",
       "type": "logs",
       "targets": [
         {
           "datasource": {
-            "type": "cloudwatch"
+            "type": "cloudwatch",
+            "uid": "${DS_CLOUDWATCH}"
           },
-          "expression": "fields @timestamp, @message, @logStream | sort @timestamp desc | limit 100",
+          "expression": "fields @timestamp, @message, @logStream | sort @timestamp desc | limit 30",
           "logGroupNames": [
             "/aws/smartretailx/microservices"
           ],
@@ -227,20 +336,21 @@
     {
       "collapsed": false,
       "gridPos": {
-        "h": 10,
+        "h": 9,
         "w": 12,
         "x": 0,
-        "y": 16
+        "y": 23
       },
-      "id": 6,
+      "id": 8,
       "title": "Catalog & Inventory Microservices Container Logs",
       "type": "logs",
       "targets": [
         {
           "datasource": {
-            "type": "cloudwatch"
+            "type": "cloudwatch",
+            "uid": "${DS_CLOUDWATCH}"
           },
-          "expression": "fields @timestamp, @message, @logStream | filter @logStream like \"catalog\" or @logStream like \"inventory\" | sort @timestamp desc | limit 50",
+          "expression": "fields @timestamp, @message, @logStream | sort @timestamp desc | limit 20",
           "logGroupNames": [
             "/aws/smartretailx/microservices"
           ],
@@ -259,20 +369,21 @@
     {
       "collapsed": false,
       "gridPos": {
-        "h": 10,
+        "h": 9,
         "w": 12,
         "x": 12,
-        "y": 16
+        "y": 23
       },
-      "id": 7,
+      "id": 9,
       "title": "Payment & Order Microservices Event Streaming Logs",
       "type": "logs",
       "targets": [
         {
           "datasource": {
-            "type": "cloudwatch"
+            "type": "cloudwatch",
+            "uid": "${DS_CLOUDWATCH}"
           },
-          "expression": "fields @timestamp, @message, @logStream | filter @logStream like \"payment\" or @logStream like \"order\" | sort @timestamp desc | limit 50",
+          "expression": "fields @timestamp, @message, @logStream | sort @timestamp desc | limit 20",
           "logGroupNames": [
             "/aws/smartretailx/microservices"
           ],
@@ -289,16 +400,34 @@
       }
     }
   ],
-  "refresh": "5s",
+  "refresh": "30s",
   "schemaVersion": 38,
   "style": "dark",
-  "tags": ["smartretailx", "cloudwatch-logs"],
+  "tags": ["smartretailx", "cloudwatch-logs", "prometheus-metrics"],
+  "templating": {
+    "list": [
+      {
+        "current": {},
+        "name": "DS_PROMETHEUS",
+        "label": "Prometheus",
+        "type": "datasource",
+        "query": "prometheus"
+      },
+      {
+        "current": {},
+        "name": "DS_CLOUDWATCH",
+        "label": "CloudWatch",
+        "type": "datasource",
+        "query": "cloudwatch"
+      }
+    ]
+  },
   "time": {
-    "from": "now-6h",
+    "from": "now-1h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "browser",
-  "title": "SmartRetailX Production Telemetry & CloudWatch Log Stream",
-  "uid": "smartretailx-live-cloudwatch-logs"
+  "title": "SmartRetailX Unified Microservices Metrics & Live CloudWatch Logs Dashboard",
+  "uid": "smartretailx-unified-telemetry"
 }

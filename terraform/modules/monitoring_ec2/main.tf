@@ -61,11 +61,14 @@ resource "aws_instance" "monitoring_server" {
   user_data = <<-EOF
               #!/bin/bash
               apt-get update -y
-              apt-get install -y docker.io docker-compose
+              apt-get install -y docker.io
               systemctl start docker
               systemctl enable docker
 
-              mkdir -p /opt/monitoring
+              mkdir -p /opt/monitoring/provisioning/datasources
+              mkdir -p /opt/monitoring/provisioning/dashboards
+              mkdir -p /opt/monitoring/dashboards
+
               cat << 'PROMETHEUSCONF' > /opt/monitoring/prometheus.yml
               global:
                 scrape_interval: 5s
@@ -78,45 +81,63 @@ resource "aws_instance" "monitoring_server" {
                 - job_name: 'gateway-service'
                   metrics_path: '/health'
                   static_configs:
-                    - targets: ['a8dfd9d744320422798209ff55d1bf51-660498316.us-east-1.elb.amazonaws.com']
+                    - targets: ['a6092b15d115448dd84b4a98d7e7ccf0-985948391.us-east-1.elb.amazonaws.com']
 
                 - job_name: 'catalog-service'
                   metrics_path: '/api/v1/catalog'
                   static_configs:
-                    - targets: ['a8dfd9d744320422798209ff55d1bf51-660498316.us-east-1.elb.amazonaws.com']
+                    - targets: ['a6092b15d115448dd84b4a98d7e7ccf0-985948391.us-east-1.elb.amazonaws.com']
 
                 - job_name: 'inventory-service'
                   metrics_path: '/api/v1/inventory'
                   static_configs:
-                    - targets: ['a8dfd9d744320422798209ff55d1bf51-660498316.us-east-1.elb.amazonaws.com']
+                    - targets: ['a6092b15d115448dd84b4a98d7e7ccf0-985948391.us-east-1.elb.amazonaws.com']
 
                 - job_name: 'order-service'
                   metrics_path: '/api/v1/orders'
                   static_configs:
-                    - targets: ['a8dfd9d744320422798209ff55d1bf51-660498316.us-east-1.elb.amazonaws.com']
+                    - targets: ['a6092b15d115448dd84b4a98d7e7ccf0-985948391.us-east-1.elb.amazonaws.com']
               PROMETHEUSCONF
 
-              cat << 'DOCKERCOMPOSE' > /opt/monitoring/docker-compose.yml
-              version: '3.8'
-              services:
-                prometheus:
-                  image: prom/prometheus:latest
-                  volumes:
-                    - ./prometheus.yml:/etc/prometheus/prometheus.yml
-                  ports:
-                    - "9090:9090"
-                  restart: always
+              cat << 'DATASOURCES' > /opt/monitoring/provisioning/datasources/datasources.yml
+              apiVersion: 1
 
-                grafana:
-                  image: grafana/grafana:latest
-                  ports:
-                    - "3000:3000"
-                  environment:
-                    - GF_SECURITY_ADMIN_PASSWORD=admin
-                  restart: always
-              DOCKERCOMPOSE
+              datasources:
+                - name: Prometheus
+                  type: prometheus
+                  access: proxy
+                  url: http://172.17.0.1:9090
+                  isDefault: true
+                  editable: true
 
-              cd /opt/monitoring && docker-compose up -d
+                - name: CloudWatch
+                  type: cloudwatch
+                  access: proxy
+                  jsonData:
+                    authType: keys
+                    defaultRegion: us-east-1
+                  secureJsonData:
+                    accessKey: YOUR_AWS_ACCESS_KEY_ID
+                    secretKey: YOUR_AWS_SECRET_ACCESS_KEY
+                  editable: true
+              DATASOURCES
+
+              cat << 'DASHBOARDPROV' > /opt/monitoring/provisioning/dashboards/dashboards.yml
+              apiVersion: 1
+
+              providers:
+                - name: 'SmartRetailX'
+                  orgId: 1
+                  folder: ''
+                  type: file
+                  disableDeletion: false
+                  editable: true
+                  options:
+                    path: /opt/monitoring/dashboards
+              DASHBOARDPROV
+
+              docker run -d --name prometheus --restart=always -p 9090:9090 -v /opt/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml prom/prometheus:latest
+              docker run -d --name grafana --restart=always -p 3000:3000 -e "GF_SECURITY_ADMIN_USER=admin" -e "GF_SECURITY_ADMIN_PASSWORD=admin" -v /opt/monitoring/provisioning:/etc/grafana/provisioning -v /opt/monitoring/dashboards:/opt/monitoring/dashboards grafana/grafana:latest
               EOF
 
   tags = {

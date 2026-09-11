@@ -5,6 +5,10 @@ on:
     branches:
       - main
       - master
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'diagram/**'
 
 env:
   AWS_REGION: us-east-1

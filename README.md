@@ -6,31 +6,7 @@
 
 ## 🏗️ Architecture & Technology Stack
 
-```
-               [ User / Browser / Postman ]
-                            │
-                            ▼
-          [ AWS Elastic Load Balancer (ELB) ]
-                            │
-                            ▼
-           [ Nginx API Gateway (`/api/v1`) ]
-                            │
-   ┌──────────────┬─────────┴───────┬──────────────┬──────────────┐
-   ▼              ▼                 ▼              ▼              ▼
-[Auth Service] [User Service] [Catalog Service] [Inventory] [Order Service]
-(Port 8006)    (Port 8001)    (Port 8002)       (Port 8003)  (Port 8005)
-   │              │                 │              │              │
-   └──────────────┴─────────┬───────┴──────────────┴──────────────┘
-                            │
-                            ▼
-            [ Redpanda Kafka / AWS SQS DLQ ]
-                            │
-                            ▼
-               [ Payment Service (Port 8004) ]
-                            │
-                            ▼
-             [ AWS RDS PostgreSQL / ElastiCache Redis ]
-```
+![SmartRetailX System Architecture](diagram/Diagram.png)
 
 ### **Core Stack**
 * **Microservices**: Python 3.11, FastAPI, SQLAlchemy ORM, Pydantic v2
