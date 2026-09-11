@@ -7,8 +7,9 @@ This directory contains production-ready Kubernetes manifests for deploying the 
 - `catalog-service.yaml`: Deployment (2 replicas) & ClusterIP service for Product Catalog.
 - `inventory-service.yaml`: Deployment (2 replicas) & ClusterIP service for Inventory Management.
 - `payment-service.yaml`: Deployment (2 replicas) & ClusterIP service for Payment Processing.
-- `order-service.yaml`: Deployment (2 replicas) & ClusterIP service for Order Processing.
+- `order-service.yaml`: Deployment & ClusterIP service for Order Processing.
 - `ingress.yaml`: Nginx Ingress Controller routing all `/api/v1/*` paths to services.
+- `hpa.yaml`: Production HorizontalPodAutoscaler specs dynamically scaling microservice pods (min 1, max 5) at 70% CPU target.
 
 ## Deploying to Kubernetes
 
@@ -24,8 +25,8 @@ kubectl create secret generic db-secrets \
 # 2. Apply Microservices Deployments & Services
 kubectl apply -f k8s/
 
-# 3. Verify Pods & Services Status
+# 3. Verify Pods, Services & HPA Status
 kubectl get pods -w
 kubectl get svc
-kubectl get ingress
+kubectl get hpa
 ```
