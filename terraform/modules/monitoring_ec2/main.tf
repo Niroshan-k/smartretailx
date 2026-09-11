@@ -69,7 +69,7 @@ resource "aws_instance" "monitoring_server" {
               mkdir -p /opt/monitoring/provisioning/dashboards
               mkdir -p /opt/monitoring/dashboards
 
-              cat << 'PROMETHEUSCONF' > /opt/monitoring/prometheus.yml
+              cat << PROMETHEUSCONF > /opt/monitoring/prometheus.yml
               global:
                 scrape_interval: 5s
 
@@ -81,22 +81,22 @@ resource "aws_instance" "monitoring_server" {
                 - job_name: 'gateway-service'
                   metrics_path: '/health'
                   static_configs:
-                    - targets: ['a6092b15d115448dd84b4a98d7e7ccf0-985948391.us-east-1.elb.amazonaws.com']
+                    - targets: ['${var.gateway_lb_url}']
 
                 - job_name: 'catalog-service'
                   metrics_path: '/api/v1/catalog'
                   static_configs:
-                    - targets: ['a6092b15d115448dd84b4a98d7e7ccf0-985948391.us-east-1.elb.amazonaws.com']
+                    - targets: ['${var.gateway_lb_url}']
 
                 - job_name: 'inventory-service'
                   metrics_path: '/api/v1/inventory'
                   static_configs:
-                    - targets: ['a6092b15d115448dd84b4a98d7e7ccf0-985948391.us-east-1.elb.amazonaws.com']
+                    - targets: ['${var.gateway_lb_url}']
 
                 - job_name: 'order-service'
                   metrics_path: '/api/v1/orders'
                   static_configs:
-                    - targets: ['a6092b15d115448dd84b4a98d7e7ccf0-985948391.us-east-1.elb.amazonaws.com']
+                    - targets: ['${var.gateway_lb_url}']
               PROMETHEUSCONF
 
               cat << 'DATASOURCES' > /opt/monitoring/provisioning/datasources/datasources.yml

@@ -19,3 +19,9 @@ variable "environment" {
   type        = string
   default     = "production"
 }
+
+variable "gateway_lb_url" {
+  description = "Target API Gateway ELB Hostname for Prometheus Scrape"
+  type        = string
+  default     = "a6092b15d115448dd84b4a98d7e7ccf0-985948391.us-east-1.elb.amazonaws.com"
+}
