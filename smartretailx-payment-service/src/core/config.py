@@ -5,6 +5,8 @@ class Settings(BaseSettings):
     PORT: int = 8004
     DATABASE_URL: str = "postgresql://payment_admin:payment_password@payment_db:5432/payment_db"
     KAFKA_BOOTSTRAP_SERVERS: str = "redpanda:29092"
+    JWT_SECRET: str = "smartretailx-super-secret-key-change-in-production"
+    SECRET_KEY: str = "smartretailx-super-secret-key-change-in-production"
     ENVIRONMENT: str = "development"
 
     class Config:

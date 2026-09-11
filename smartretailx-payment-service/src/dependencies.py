@@ -47,7 +47,8 @@ def get_current_user(token: str = Depends(oauth2_scheme)) -> TokenPayload:
     if not token:
         raise UnauthorizedException("Authentication token required for payment processing")
     try:
-        payload_dict = decode_access_token(token, secret_key=settings.SECRET_KEY)
+        secret_key = getattr(settings, "SECRET_KEY", getattr(settings, "JWT_SECRET", "smartretailx-super-secret-key-change-in-production"))
+        payload_dict = decode_access_token(token, secret_key=secret_key)
         return TokenPayload(**payload_dict)
     except Exception as e:
         raise UnauthorizedException(f"Invalid authentication token: {str(e)}")
