@@ -1,9 +1,34 @@
-# SmartRetailX - Inventory Management Service
+# 📊 SmartRetailX Inventory Management Service
 
-## Overview
-Manages product stock levels, location tracking, and handles real-time stock deduction asynchronously via Kafka events.
+The **Inventory Service** tracks warehouse stock levels and participates in the **Choreography-based SAGA Pattern** by listening to Kafka `OrderCreated` events and auto-deducting product stock.
 
-## Features
-- **Endpoints**: List inventory (`GET /api/v1/inventory`), Product stock (`GET /api/v1/inventory/{id}`), Update stock (`PUT /api/v1/inventory/{id}`), Deduct stock (`POST /api/v1/inventory/deduct`).
-- **Kafka Listener**: Listens to `orders-topic` and processes `OrderCreated` events.
-- **Port**: `8003`
+---
+
+## 🛠️ Tech Stack & Features
+- **Framework**: FastAPI (Python 3.11)
+- **Database**: Amazon RDS PostgreSQL (`inventory_db` schema)
+- **Event Consumer**: Background thread listening to Redpanda Kafka `orders-topic`
+- **Security**: JWT Bearer token protection on stock adjustment endpoints
+- **Observability**: Prometheus metrics endpoint (`/metrics`)
+
+---
+
+## 🌐 API Endpoints
+
+| Method | Endpoint | Description | Auth Required |
+| :---: | :--- | :--- | :---: |
+| `GET` | `/api/v1/inventory` | Lists stock levels for all products | ❌ No |
+| `GET` | `/api/v1/inventory/{product_id}` | Gets stock level for a specific product | ❌ No |
+| `PUT` | `/api/v1/inventory/{product_id}` | Sets warehouse stock quantity | 🔑 Bearer Token |
+| `POST` | `/api/v1/inventory/deduct` | Deducts stock for order fulfillment | 🔑 Bearer Token |
+| `GET` | `/health` | Service health check | ❌ No |
+
+---
+
+## 💻 Environment Variables
+
+| Variable Name | Default Value | Description |
+| :--- | :--- | :--- |
+| `PORT` | `8003` | Application port |
+| `DATABASE_URL` | `postgresql://inventory_admin:...@localhost:5432/inventory_db` | PostgreSQL connection string |
+| `KAFKA_BOOTSTRAP_SERVERS` | `localhost:9092` | Redpanda Kafka broker address |
